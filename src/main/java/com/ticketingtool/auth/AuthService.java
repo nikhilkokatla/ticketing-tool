@@ -27,7 +27,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    // User Registration
+
     public String register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -48,7 +48,7 @@ public class AuthService {
         return "User registered successfully";
     }
 
-    // User Login
+
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
