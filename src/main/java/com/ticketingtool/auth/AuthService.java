@@ -1,14 +1,16 @@
+
 package com.ticketingtool.auth;
 
 import com.ticketingtool.auth.dto.RegisterRequest;
 import com.ticketingtool.auth.dto.LoginRequest;
 import com.ticketingtool.auth.dto.AuthResponse;
-import com.ticketingtool.security.JwtService;
 import com.ticketingtool.user.User;
 import com.ticketingtool.user.UserRepository;
+import com.ticketingtool.user.UserRole;
+import com.ticketingtool.security.JwtService;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class AuthService {
@@ -27,7 +29,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-
+    // User Registration
     public String register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -43,12 +45,15 @@ public class AuthService {
                 passwordEncoder.encode(request.getPassword())
         );
 
+        // Assign CUSTOMER role by default
+        user.setRole(UserRole.CUSTOMER);
+
         userRepository.save(user);
 
         return "User registered successfully";
     }
 
-
+    // User Login
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
@@ -56,17 +61,22 @@ public class AuthService {
                         new RuntimeException("Invalid email or password"));
 
         if (!passwordEncoder.matches(
-                request.getPassword(), user.getPasswordHash())) {
+                request.getPassword(),
+                user.getPasswordHash())) {
 
             throw new RuntimeException("Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(
+                user.getEmail(),
+                user.getRole().name()
+        );
 
         return new AuthResponse(
                 "Login successful",
                 token,
-                "Bearer"
+                "Bearer",
+                user.getRole().name()
         );
     }
 }

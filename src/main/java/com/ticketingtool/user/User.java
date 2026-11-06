@@ -2,7 +2,7 @@
 package com.ticketingtool.user;
 
 import jakarta.persistence.*;
-        import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -12,6 +12,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     @Column(unique = true, nullable = false)
@@ -20,15 +21,23 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.CUSTOMER;
+
     private LocalDateTime createdAt;
 
+    // Default constructor
     public User() {
     }
 
+    // Automatically set creation time
     @PrePersist
-    public void prePersist() {
+    protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -60,6 +69,14 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {

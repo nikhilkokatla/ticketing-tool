@@ -1,9 +1,11 @@
+
 package com.ticketingtool.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.io.Decoders;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +26,19 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String email) {
+    // Generate JWT token with role
+    public String generateToken(String email, String role) {
 
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
     }
 
+    // Extract email from token
     public String extractEmail(String token) {
 
         return Jwts.parser()
@@ -44,6 +49,18 @@ public class JwtService {
                 .getSubject();
     }
 
+    // Extract role from token
+    public String extractRole(String token) {
+
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
+    }
+
+    // Validate token
     public boolean isTokenValid(String token, String email) {
 
         try {

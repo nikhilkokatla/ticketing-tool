@@ -1,3 +1,4 @@
+
 package com.ticketingtool.auth.dto;
 
 public class AuthResponse {
@@ -5,14 +6,17 @@ public class AuthResponse {
     private String message;
     private String token;
     private String tokenType;
+    private String role;
 
     public AuthResponse() {
     }
 
-    public AuthResponse(String message, String token, String tokenType) {
+    public AuthResponse(String message, String token,
+                        String tokenType, String role) {
         this.message = message;
         this.token = token;
         this.tokenType = tokenType;
+        this.role = role;
     }
 
     public String getMessage() {
@@ -37,5 +41,13 @@ public class AuthResponse {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
